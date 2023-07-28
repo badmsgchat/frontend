@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>badmsgplatform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/socket.io/socket.io.min.js"></script>
+ <link rel="stylesheet" href="/local/bstrap.css">
+ <link rel="stylesheet" href="/local/style.css">
+</head>
+<body>
+<div class="container">
+  <small>badmsgplatform 0.4 Dev - Room ID: <span id="roomid"><%= roomid %></span> <small style="margin-left: 10px;">roomname: <%= roomname %>; roomcreator: <%= roomcreator %></small></small>
+  <button id="logout" class="">Log-out</button>
+  <button id="settings" onclick="App_Functions_ToggleSettingsDiv()">settings</button>
+    <div id="messages">
+
+    </div>
+    <br><br>
+    <div class="form send">
+        <textarea id="message" class="form-control" placeholder="Your Message Here"></textarea>
+        <button id="send" class="btn btn-primary">Send</button>
+    </div>
+</div>
+<script src="/local/script.min.js"></script>
+</body>
+</html>
