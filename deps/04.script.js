@@ -32,9 +32,10 @@ function addMessages(e) {
                     second: "numeric"
                 })
             )
-        ).append($("<span>")
-            .attr("id", "deltoggle")
-            .attr("style", "float:right;margin-right:10px;")
+        ).append($("<a>")
+            .attr("meta", e.id)
+            .attr("class", "deltoggle")
+            .attr("style", "color:#808080;float:right;margin-right:50px;")
             .text("🗑"))
         .append($("<pre>").html(md)), $("#messages").append(e).append($("<hr>")),
              t = document.querySelectorAll("a"), e = document.querySelectorAll("img"), t.forEach(e => {
@@ -49,7 +50,7 @@ function addMessages(e) {
 function getMessages() {
     $.get(location.origin + "/messages?room_id=" + roomid, e => {
         e.forEach(addMessages)
-    })
+    });
 }
 
 function sendMessage(e) {
@@ -70,8 +71,7 @@ function eventHandler(e) {
 }
 
 $(() => {
-        $("#send")
-            .click(() => {
+        $("#send").click(() => {
                 sendMessage({
                     name: $("#name")
                         .val(),
@@ -80,16 +80,24 @@ $(() => {
                     pfpuri: localStorage.getItem("pfpurl"),
                     room_id: roomid
                 })
-            }), getMessages()
-    })
-    io.on("message", addMessages);
-    io.on("event", eventHandler);
+            })
+        getMessages()
 
-    $("#logout").click(() => {
-        $.post("/api/logout", () => {
-            window.location.href = "/login"
-        })
-    });
+        // this is dumb and might not work sometimes but nothing else i tried works
+        setTimeout(()=>{
+            document.querySelectorAll(".deltoggle").forEach((btn) => {
+                btn.addEventListener("click", function(){
+                    if( confirm("are you sure you want to delete this message?") ) {
+                        var id = btn.getAttribute("meta");
+                        $.post("/messages/delete", { id: id });
+                    }
+                })
+            })
+        }, 1500)
+    })
+
+io.on("message", addMessages);
+io.on("event", eventHandler);
 var settingsExists = !1;
 
 function App_Functions_ToggleSettingsDiv() {
@@ -100,8 +108,9 @@ function App_Functions_ToggleSettingsDiv() {
         <input type="url" id="settings_input_pfp" placeholder="your pfp url">
         <br>
         <input type="checkbox" disabled> <text id="divtext">nothing here 👀</text>
-      `, document.body.appendChild(e))
+        <button id="logout" onclick="$.post('\/api\/logout',()=>{window.location.href='/login'})">Log-out</button>`, document.body.appendChild(e))
 }
+
 var messageInput = document.getElementById("message");
 messageInput.addEventListener("keydown", function(e) {
     13 !== e.keyCode || e.shiftKey ? 13 === e.keyCode && e.shiftKey && (messageInput.value += " ") : "" !== messageInput.value && (e.preventDefault(), document.getElementById("send")
