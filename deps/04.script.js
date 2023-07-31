@@ -2,8 +2,10 @@
 var roomid = document.getElementById("roomid").innerText,
     vars_proxyurl = window.location.origin + "/api/proxyhs?u=",
     io = io();
+
 io.emit('join', {roomid: roomid});
 
+(function(){
 function addMessages(e) {
     var md = new showdown.Converter();
     md.setOption("emoji", !0), md = twemoji.parse(md.makeHtml(e.message), {
@@ -33,8 +35,7 @@ function addMessages(e) {
                 })
             )
         ).append($("<a>")
-            .attr("meta", e.id)
-            .attr("class", "deltoggle")
+            .attr("onclick", `App.internal.removeid('${e.id}')`)
             .attr("style", "color:#808080;float:right;margin-right:50px;")
             .text("🗑"))
         .append($("<pre>").html(md)), $("#messages").append(e).append($("<hr>")),
@@ -43,8 +44,8 @@ function addMessages(e) {
         }), e.forEach(e => {
             var t;
             e.src.startsWith(vars_proxyurl) || (t = e.src, e.src = vars_proxyurl + t)
-        }), $("#messages")
-        .scrollTop($("#messages")[0].scrollHeight)
+        });
+        $("#messages").scrollTop($("#messages")[0].scrollHeight)
 }
 
 function getMessages() {
@@ -82,45 +83,45 @@ $(() => {
                 })
             })
         getMessages()
-
-        // this is dumb and might not work sometimes but nothing else i tried works
-        setTimeout(()=>{
-            document.querySelectorAll(".deltoggle").forEach((btn) => {
-                btn.addEventListener("click", function(){
-                    if( confirm("are you sure you want to delete this message?") ) {
-                        var id = btn.getAttribute("meta");
-                        $.post("/messages/delete", { id: id });
-                    }
-                })
-            })
-        }, 1500)
     })
 
 io.on("message", addMessages);
 io.on("event", eventHandler);
-var settingsExists = !1;
+})();
 
-function App_Functions_ToggleSettingsDiv() {
-    var e = document.querySelector(".settings-div");
-    e ? e.remove() : ((e = document.createElement("div"))
-        .classList.add("settings-div"), e.style.position = "fixed", e.style.top = "50%", e.style.left = "50%", e.style.transform = "translate(-50%, -50%)", e.style.padding = "140px", e.style.borderRadius = "10px", e.style.outline = "solid 2px", e.style.outlineColor = "#808080", e.style.backgroundColor = "#000000", e.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.1)", e.innerHTML = `    <h3 id="divtext">Settings</h3>
-        <br>
-        <input type="url" id="settings_input_pfp" placeholder="your pfp url">
-        <br>
-        <input type="checkbox" disabled> <text id="divtext">nothing here 👀</text>
-        <button id="logout" onclick="$.post('\/api\/logout',()=>{window.location.href='/login'})">Log-out</button>`, document.body.appendChild(e))
-}
+const App = {
+    settingsExist: false,
+    internal: {
+        removeid: function(id) {
+            if( confirm("are you sure you want to delete this message?") ) {
+                $.post("/messages/delete", { id: id });
+            }
+        }
+    },
+    toggleSettings: function() {
+        var e = document.querySelector(".settings-div");
+        e ? e.remove() : ((e = document.createElement("div"))
+            .classList.add("settings-div"), e.style.position = "fixed", e.style.top = "50%", e.style.left = "50%", e.style.transform = "translate(-50%, -50%)", e.style.padding = "140px", e.style.borderRadius = "10px", e.style.outline = "solid 2px", e.style.outlineColor = "#808080", e.style.backgroundColor = "#000000", e.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.1)", e.innerHTML = `    <h3 id="divtext">Settings</h3>
+            <br>
+            <input type="url" id="settings_input_pfp" placeholder="your pfp url">
+            <br>
+            <input type="checkbox" disabled> <text id="divtext">nothing here 👀</text>
+            <button id="logout" onclick="$.post('\/api\/logout',()=>{window.location.href='/login'})">Log-out</button>`, document.body.appendChild(e))
+    }
+};
 
+(function(){
 var messageInput = document.getElementById("message");
 messageInput.addEventListener("keydown", function(e) {
     13 !== e.keyCode || e.shiftKey ? 13 === e.keyCode && e.shiftKey && (messageInput.value += " ") : "" !== messageInput.value && (e.preventDefault(), document.getElementById("send")
         .click())
 }), document.addEventListener("DOMNodeInserted", function(e) {
     var t;
-    e.target.classList.contains("settings-div") && (settingsExists = !0, (t = document.getElementById("settings_input_pfp"))
+    e.target.classList.contains("settings-div") && (App.settingsExist = true, (t = document.getElementById("settings_input_pfp"))
         .value = localStorage.getItem("pfpurl"), t.addEventListener("change", function() {
             localStorage.setItem("pfpurl", t.value)
         }))
 }), document.addEventListener("DOMNodeRemoved", function(e) {
-    e.target.classList.contains("settings-div") && (settingsExists = !1)
+    e.target.classList.contains("settings-div") && (App.settingsExist = false)
 }), localStorage.getItem("pfpurl") || localStorage.setItem("pfpurl", "");
+})();

@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="container">
-  <small>badmsgplatform 0.4 Dev</small>
+  <small>badmsgplatform 0.4.2 Dev</small>
   <button id="logout" onclick="location.href=location.origin+'/logout'">Log-out</button>
   <h2><b><%= error %></b></h2>
   <br><h1>Hello, <%= name %>.</h1>
@@ -20,16 +20,16 @@
   <br><br><small>or</small><br><br>
   <div>
     <h3>Create a Room</h3>
-    <form action="/api/createroom" id="createform" method="post">
-      <label for="seclevel">ID Security:</label>
-      <select id="seclevel" name="seclevel" disabled="true">
-        <option value="1">Secure</option>
-        <option value="2">More Secure</option>
-      </select>
-      <br>
-      <input type="text" id="roomname" placeholder="Room name" required>
-      <button type="submit" class="btn btn-success" id="create">Create</button>
-    </form>
+    <div id="createform">
+        <label for="seclevel">ID Length:</label>
+        <select id="seclevel" name="seclevel" disabled="true">
+          <option value="1">Secure</option>
+          <option value="2">More Secure</option>
+        </select>
+        <br>
+        <input type="text" id="roomname" placeholder="Room name" required>
+        <button type="submit" class="btn btn-success" id="create">Create</button>
+    </div>
   </div>
   <br><br><br><br>
   <h3>Last joined</h3><div id="lastJoined"></div>
@@ -77,7 +77,7 @@
     .catch(error => alert('Error creating room:', error));
   }
   document.getElementById("create").addEventListener("click", makeRoom);
-  document.getElementById("roomname").addEventListener("keydown", function(e){if (e.key === 'Enter') {e.preventDefault();document.getElementById("create").click();}});
+  document.getElementById("roomname").addEventListener("keydown", function(e){if (e.key === 'Enter') {makeRoom()}});
   </script>
 </div>
 </body>
