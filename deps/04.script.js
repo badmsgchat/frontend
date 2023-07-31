@@ -2,6 +2,7 @@
 var roomid = document.getElementById("roomid").innerText,
     vars_proxyurl = window.location.origin + "/api/proxyhs?u=",
     io = io();
+io.emit('join', {roomid: roomid});
 
 function addMessages(e) {
     var md = new showdown.Converter();
@@ -9,7 +10,7 @@ function addMessages(e) {
             folder: "svg",
             ext: ".svg"
         }), e = $("<div>")
-        .attr("id", "message-box")
+        .attr("id", "msg-"+e.id)
         .addClass("msg")
         .append($("<img>")
             .attr({
@@ -29,11 +30,14 @@ function addMessages(e) {
                     hour: "numeric",
                     minute: "numeric",
                     second: "numeric"
-                })))
-        .append($("<pre>")
-            .html(md)), $("#messages")
-        .append(e)
-        .append($("<hr>")), t = document.querySelectorAll("a"), e = document.querySelectorAll("img"), t.forEach(e => {
+                })
+            )
+        ).append($("<span>")
+            .attr("id", "deltoggle")
+            .attr("style", "float:right;margin-right:10px;")
+            .text("🗑"))
+        .append($("<pre>").html(md)), $("#messages").append(e).append($("<hr>")),
+             t = document.querySelectorAll("a"), e = document.querySelectorAll("img"), t.forEach(e => {
             e.target = "_blank"
         }), e.forEach(e => {
             var t;
@@ -55,6 +59,16 @@ function sendMessage(e) {
                 .scrollTop($("#messages")[0].scrollHeight)
         })
 }
+
+function eventHandler(e) {
+    if (e.type === "delete") {
+        var msg = $("#msg-"+e.id);
+        if (msg) {
+            msg.html("<pre style='color: #808080;'><i>this message was deleted</i></pre>");
+        }
+    }
+}
+
 $(() => {
         $("#send")
             .click(() => {
@@ -67,9 +81,12 @@ $(() => {
                     room_id: roomid
                 })
             }), getMessages()
-    }), io.on(roomid, addMessages), $("#logout")
-    .click(() => {
-        $.get("/logout", () => {
+    })
+    io.on("message", addMessages);
+    io.on("event", eventHandler);
+
+    $("#logout").click(() => {
+        $.post("/api/logout", () => {
             window.location.href = "/login"
         })
     });

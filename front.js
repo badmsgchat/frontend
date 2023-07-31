@@ -37,12 +37,3 @@ app.get('/register', (req, res) => {
   }
   res.sendFile(frontdir + 'pages/register.html');
 });
-
-app.get('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.sendStatus(500);
-    }
-    res.redirect('/');
-  });
-});
