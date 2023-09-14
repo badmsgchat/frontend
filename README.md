@@ -1,3 +1,3 @@
 # frontend
-frontend submodule for the backend<br>
+badmsg's frontend<br>
 readme still in progress!

@@ -1,15 +1,49 @@
-var fs = require('fs');
-var {minify} = require('../node_modules/uglify-js');
+const {minify} = require('../node_modules/uglify-js');
+const fs = require('fs'),
+      path = require('path');
 
-// build script.min.js
-var fnames = fs.readdirSync("./frontend/deps");
-fnames.sort(function(a, b){
-    return parseInt(a.split('.')[0]) - parseInt(b.split('.')[0]);
+const config = {
+  directory: path.join(__dirname, 'js'),
+  output: path.join(__dirname, 'assets', 'script.min.js'),
+  uglifyConfig: { mangle: true, compress: true }
+};
+
+
+
+function getFiles(dir, array) {
+  var files = fs.readdirSync(dir);
+  var array = array || [];
+
+  files.forEach(f => {
+    const fpath = path.join(dir, f);
+
+    if (fs.statSync(fpath).isDirectory()) {
+      array = getFiles(fpath, array);
+    } else {
+      if (f.endsWith('.js')) {
+        array.push(fpath);
+      }
+    }
+  });
+
+  return array;
+}
+
+
+// sort all files based on numbers, and concatenate
+const files = getFiles(config.directory);
+const sorted = files.sort((a, b) => {
+  a = parseInt(a.split('.')[0]);
+  b = parseInt(b.split('.')[0]);
+
+  return a - b;
 });
 
-var content = fnames.map(function(fname) {
-  return fs.readFileSync("./frontend/deps/"+fname, "utf-8");
-}).join(" \n");
+const concatenated = sorted.map(fpath => {
+  return fs.readFileSync(fpath, 'utf-8');
+}).join('\n');
 
-var min = minify(content, {mangle: true, compress: true});
-fs.writeFileSync("./frontend/assets/script.min.js", min.code, "utf-8");
+
+// minify
+const minified = minify(concatenated, config.uglifyConfig).code;
+fs.writeFileSync(config.output, minified, 'utf-8');

@@ -24,6 +24,8 @@ app.get('/app/:roomid', async (req,res)=>{
   }
 })
 
+
+
 app.get('/login', (req, res) => {
   if (req.session.username) {
     return res.redirect('/');
@@ -36,4 +38,13 @@ app.get('/register', (req, res) => {
     return res.redirect('/');
   }
   res.sendFile(frontdir + 'pages/register.html');
+});
+
+app.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.sendStatus(500);
+    }
+    res.redirect('/login');
+  });
 });

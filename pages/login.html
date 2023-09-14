@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
@@ -46,16 +46,16 @@
       .last{
         margin-bottom: 10px;
       }</style>
-  </head>
-  <body class="text-center">
-    
-<main class="form-signin w-100 m-auto">
-    <h1 class="h3 mb-3 fw-normal">Sign in to: badmsgplatform</h1>
-    <input name="username" type="text" class="form-control" id="floatingInput" placeholder="Username">
-      <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password"><br>
-      <button class="w-100 btn btn-lg btn-primary" id="loginBtn">Sign in</button>
-    <p class="mt-5 mb-3 text-muted">Don't have an account? <a href="/register">Create one.</a></p>
-</main>
-<script>(function(){var loginBtn=document.getElementById("loginBtn");loginBtn.addEventListener("click",function(){var n={username:document.getElementById("floatingInput").value,password:document.getElementById("floatingPassword").value};fetch("/login",{method:"POST",body:JSON.stringify(n),headers:{"Content-Type":"application/json"}}).then(function(n){n.ok?window.location.href="/":alert("An error occurred.\n"+n.status)}).catch(function(n){console.error("An error occurred.\n"+response.status)})});})();</script>
-  </body>
+</head>
+<body class="text-center">
+    <main class="form-signin w-100 m-auto">
+        <h1 class="h3 mb-3 fw-normal">Sign in to: badmsgplatform</h1>
+        <input name="username" type="text" class="form-control" id="floatingInput" placeholder="Username">
+          <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password"><br>
+          <button class="w-100 btn btn-lg btn-primary" id="loginBtn">Sign in</button>
+        <p class="mt-5 mb-3 text-muted">Don't have an account? <a href="/register">Create one.</a></p>
+    </main>
+
+    <script src="/local/script.min.js"></script>
+</body>
 </html>
