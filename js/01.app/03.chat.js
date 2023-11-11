@@ -1,5 +1,4 @@
-// TODO: make prettier
-// this contains main app code things
+// this contains the main app, messaging window
 
 if (location.path.is('/app')) {
 
@@ -10,6 +9,8 @@ if (location.path.is('/app')) {
     io.emit('join', {roomid: roomid});
     
     (()=> {
+    var xhr = new XMLHttpRequest();
+    
     function addMessages(e) {
         var md = new showdown.Converter();
         md.setOption("emoji", !0), md = twemoji.parse(md.makeHtml(e.message), {
@@ -49,21 +50,31 @@ if (location.path.is('/app')) {
                 var t;
                 e.src.startsWith(vars_proxyurl) || (t = e.src, e.src = vars_proxyurl + t)
             });
-            $("#messages").scrollTop($("#messages")[0].scrollHeight)
+            $("#messages")[0].scrollTop = $("#messages")[0].scrollHeight;
     }
     
     function getMessages() {
-        $.get(location.origin + "/messages?room_id=" + roomid, e => {
-            e.forEach(addMessages)
-        });
+        xhr.open("GET", "/messages?room_id=" + roomid, true);
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                JSON.parse(xhr.responseText).forEach(addMessages);
+            }
+        }
+        xhr.send();
     }
     
     function sendMessage(e) {
-        pfpurl = localStorage.getItem("pfpurl"), e.pfpuri || (e.pfpuri = ""), $("#message")
-            .val(""), pfpurl.value, $.post(location.origin + "/messages/", e, () => {
-                $("#messages")
-                    .scrollTop($("#messages")[0].scrollHeight)
-            })
+        pfpurl = localStorage.getItem("pfpurl");   e.pfpuri = e.pfpuri || "";
+        $("#message").val("");
+
+        xhr.open("POST", "/messages/", true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                $("#messages")[0].scrollTop = $("#messages")[0].scrollHeight;
+            }
+        }
+        xhr.send(JSON.stringify(e));
     }
     
     function eventHandler(e) {
@@ -76,7 +87,7 @@ if (location.path.is('/app')) {
     }
     
     $(() => {
-            $("#send").click(() => {
+            $("#send").on("click", () => {
                     sendMessage({
                         name: $("#name")
                             .val(),
@@ -99,7 +110,10 @@ if (location.path.is('/app')) {
             settingsExist: false,
             removeid: function(id) {
                 if( confirm("are you sure you want to delete this message?") ) {
-                    $.post("/messages/delete", { id: id });
+                    xhr = new XMLHttpRequest();
+                    xhr.open("POST", "/messages/delete", true);
+                    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                    xhr.send(JSON.stringify({id: id}));
                 }
             }
         },
@@ -116,7 +130,8 @@ if (location.path.is('/app')) {
         }
     };
     
-    
+
+    // TODO: make prettier
     (()=> {
     var messageInput = document.getElementById("message");
     messageInput.addEventListener("keydown", function(e) {
