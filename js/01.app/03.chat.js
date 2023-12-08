@@ -44,10 +44,10 @@ if (location.path.is('/app')) {
         if(md) $("#messages").append(el).append($("<hr>"));
         
         $("#messages")[0].scrollTop = $("#messages")[0].scrollHeight;
-        $("a").each(tag => {
+        $("a").each((i,tag) => {
             tag.target = "_blank";
         });
-        $("img").each(tag => {
+        $("img").each((i,tag) => {
             if (tag.src && !tag.src.startsWith(proxyurl)) { tag.src = proxyurl+tag.src };
         });
     }
