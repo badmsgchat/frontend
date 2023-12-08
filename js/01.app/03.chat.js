@@ -1,16 +1,22 @@
 // this contains the main app, messaging window
 
 if (location.path.is('/app')) {
+  (()=> {
 
     var roomid = document.getElementById("roomid").innerText,
-        vars_proxyurl = window.location.origin + "/api/proxyhs?u=",
-        io = io();
+        proxyurl = location.origin + "/api/proxyhs?u=",
+        ws = new WebSocket('ws://' + location.host);
+
+    // connect
+    ws.addEventListener('open', () => {
+        ws.send( JSON.stringify({ e:'j', room: roomid }) );
+    });
+    ws.addEventListener('close', () => {
+        console.warn('[ws] closed');
+    });
     
-    io.emit('join', {roomid: roomid});
     
-    (()=> {
     var xhr = new XMLHttpRequest();
-    
     function addMessages(e) {
         var md = new showdown.Converter();
         md.setOption("emoji", !0), md = twemoji.parse(md.makeHtml(e.message), {
@@ -48,7 +54,7 @@ if (location.path.is('/app')) {
                 e.target = "_blank"
             }), e.forEach(e => {
                 var t;
-                e.src.startsWith(vars_proxyurl) || (t = e.src, e.src = vars_proxyurl + t)
+                e.src.startsWith(proxyurl) || (t = e.src, e.src = proxyurl + t)
             });
             $("#messages")[0].scrollTop = $("#messages")[0].scrollHeight;
     }
@@ -77,13 +83,11 @@ if (location.path.is('/app')) {
         xhr.send(JSON.stringify(e));
     }
     
-    function eventHandler(e) {
-        if (e.type === "delete") {
-            var msg = $("#msg-"+e.id);
+    function deleteMessage(id) {
+            var msg = $("#msg-"+id);
             if (msg) {
                 msg.html("<pre style='color: #808080;'><i>this message was deleted</i></pre>");
             }
-        }
     }
     
     $(() => {
@@ -100,9 +104,14 @@ if (location.path.is('/app')) {
             getMessages()
         })
     
-    io.on("message", addMessages);
-    io.on("event", eventHandler);
-    })();
+
+    
+    ws.addEventListener("message", (e) => {
+        const data = JSON.parse(e.data);
+        if (data.ev == "msg") return addMessages(data);
+        if (data.ev == "rm") return deleteMessage(data.id);
+    });
+  })();
     
     
     badmsg = {

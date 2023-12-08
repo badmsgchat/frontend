@@ -1,31 +1,31 @@
 if (location.path.exact('/') || 
-   (document.getElementById("_err") && document.getElementById("_err").textContent != "")) {
+   ($("#_err") && $("#_err").text() != "")) {
   window.onload = function() {
-    const lastJoinedDiv = document.getElementById('lastJoined');
+    const lastJoinedDiv = $('#lastJoined');
     const joinedRooms = localStorage.getItem('joinedRooms');
     if (joinedRooms) {
       const joinedRoomLinks = joinedRooms.split(';').reverse().map(roomId => `<a href="${location.origin}/app/${roomId}">${roomId}</a>`).join(', ');
-      lastJoinedDiv.innerHTML = joinedRoomLinks;
+      lastJoinedDiv.html(joinedRoomLinks);
     }
   };
 
   
   function joinRoom(roomId){
-    let joinedRooms = localStorage.getItem('joinedRooms');
+    let joinedRooms = $('joinedRooms');
     if (!joinedRooms) {
       joinedRooms = roomId;
     } else {
       joinedRooms = joinedRooms + ';' + roomId;
     }
     localStorage.setItem('joinedRooms', joinedRooms);
-    const lastJoinedDiv = document.getElementById('lastJoined');
+    const lastJoinedDiv = $('lastJoined');
     const joinedRoomLinks = joinedRooms.split(';').reverse().map(roomId => `<a href="${location.origin}/app/${roomId}">${roomId}</a>`).join(', ');
-    lastJoinedDiv.innerHTML = joinedRoomLinks;
+    lastJoinedDiv.html(joinedRoomLinks);
     location.href = `${location.origin}/app/${roomId}`;
   }
 
   function makeRoom() {
-    const roomname = document.getElementById("roomname").value;
+    const roomname = $("roomname").value;
     fetch('/api/createroom', {
       method: 'POST',
       headers: {
@@ -46,9 +46,9 @@ if (location.path.exact('/') ||
     .catch(err => alert('Error creating room:', err));
   }
 
-  document.getElementById("create").addEventListener("click", makeRoom);
-  document.getElementById("roomname").addEventListener("keydown", (e)=>{if (e.key === 'Enter') {makeRoom()}});
-  document.getElementById("ljclear").addEventListener("click", (e)=>{
+  $("#create").on("click", makeRoom);
+  $("#roomname").on("keydown", (e)=>{if (e.key === 'Enter') {makeRoom()}});
+  $("#ljclear").on("click", ()=>{
     if (confirm('are you sure you want to clear your last joined list?')) {
       localStorage.setItem('joinedRooms', "");
     }
