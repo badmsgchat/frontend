@@ -17,48 +17,43 @@ if (location.path.is('/app')) {
     
     
     var xhr = new XMLHttpRequest();
-    function addMessages(e) {
+    function addMessages(data) {
         var md = new showdown.Converter();
-        md.setOption("emoji", !0), md = twemoji.parse(md.makeHtml(e.message), {
-                folder: "svg",
-                ext: ".svg"
-            }), e = $("<div>")
-            .attr("id", "msg-"+e.id)
-            .addClass("msg")
-            .append($("<img>")
-                .attr({
-                    src: e.pfpuri,
-                    class: "pfp"
-                }))
-            .append($("<h4>")
-                .text(e.name)
-                .css("display", "inline"))
-            .append($("<small>")
-                .css("margin-left", "7px")
-                .text("on " + new Date(1e3 * e.created_at)
-                    .toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "numeric",
-                        second: "numeric"
-                    })
-                )
-            ).append($("<a>")
-                .attr("onclick", `badmsg.internal.removeid('${e.id}')`)
-                .attr("style", "color:#808080;float:right;margin-right:50px;")
-                .text("🗑"))
-            .append($("<pre>").html(md)), $("#messages").append(e).append($("<hr>")),
-                 t = document.querySelectorAll("a"), e = document.querySelectorAll("img"), t.forEach(e => {
-                e.target = "_blank"
-            }), e.forEach(e => {
-                var t;
-                e.src.startsWith(proxyurl) || (t = e.src, e.src = proxyurl + t)
-            });
-            $("#messages")[0].scrollTop = $("#messages")[0].scrollHeight;
+        md.setOption("emoji", true);
+        md = twemoji.parse(md.makeHtml(data.message), { folder: "svg", ext: ".svg" }); // convert text => md => emojis
+        md = DOMPurify.sanitize(md);
+    
+        var el = $("<div>")
+            .attr("id", "msg-"+data.id).addClass("msg")
+            .append( $("<img>").attr({
+                src: data.pfpuri, class: "pfp"
+            }) )
+
+            .append( $("<h4>").text(data.name).css("display", "inline") )         // username
+            .append( $("<small>").css("margin-left", "7px")                       // timestamp
+                     .text("on " + new Date(1000 * data.created_at).toLocaleDateString("en-us") )
+                    )
+            .append( $("<a>").on("click", ()=>badmsg.internal.removeid(data.id))  // deletebtn
+                             .css("color", "#808080").css("float", "right")
+                             .css("margin-right", "50px")
+                             .text("🗑") )
+            
+            .append( $("<pre>").html(md) );
+        
+        
+        if(md) $("#messages").append(el).append($("<hr>"));
+        
+        $("#messages")[0].scrollTop = $("#messages")[0].scrollHeight;
+        $("a").each(tag => {
+            tag.target = "_blank";
+        });
+        $("img").each(tag => {
+            if (tag.src && !tag.src.startsWith(proxyurl)) { tag.src = proxyurl+tag.src };
+        });
     }
     
+
+
     function getMessages() {
         xhr.open("GET", "/messages?room_id=" + roomid, true);
         xhr.onreadystatechange = () => {
