@@ -1,3 +1,4 @@
 # frontend
-badmsg's frontend<br>
-readme still in progress!
+The badmsg web client, built using Vite, Preact and Tailwind.
+
+WIP

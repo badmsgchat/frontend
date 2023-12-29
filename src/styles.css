@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .form-input {
+    @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg;
+    @apply focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5;
+    @apply dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
+  }
+
+  .sideBtn {
+    @apply mt-2 mb-1 w-full max-w-full rounded-lg bg-gray-700 p-2 hover:bg-gray-600;
+  }
+
+  .main {
+    @apply flex-1 p-4 dark:bg-gray-900;
+  }
+}
