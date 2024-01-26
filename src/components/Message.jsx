@@ -1,7 +1,12 @@
+import { useRef, useEffect } from "preact/hooks";
 import { config } from "./Utils";
-const deleteMsg = async (id, stamp) => {
-  if (id === ".deleted") return;
 
+import md from "snarkdown";
+import twemoji from "twemoji";
+import DOMPurify from "dompurify";
+
+
+const deleteMsg = async (id, stamp) => {
   fetch('/api/messages/delete', {
     method: 'POST', 
     headers: {"Authorization": config().token, "Content-Type": "application/json"},
@@ -13,23 +18,35 @@ const deleteMsg = async (id, stamp) => {
   });
 }
 
-const Message = ({ id, user, msg, stamp, pfpuri }) => {
+export default function Message({ id, user, msg, stamp, pfpuri }) {
+  let message = twemoji.parse( md(msg) );
+  message = DOMPurify.sanitize(message);
+
+
+  const messageText = useRef(null);
+  useEffect(()=>{
+    const links = messageText.current.querySelectorAll("a");
+    links.forEach(l => {
+      l.setAttribute("target", "_blank");
+    });
+  }, []);
+
   return (
     <div className="flex items-start">
-      <div className="p-1 flex items-center">
-        <img className="w-12 h-12 rounded-full" src={"/mproxy?url=" + encodeURIComponent(pfpuri)} />
+      <div className="p-1 flex">
+        <img className="w-12 h-12 rounded-full mr-2" src={"/mproxy?url=" + encodeURIComponent(pfpuri)} />
 
         <div className="flex flex-col">
           <div className="flex items-center">
             <span className="font-bold">{user}</span>
             <span className="ml-2 text-gray-500 text-xs">at { new Date(stamp * 1000).toLocaleString("en-US") }</span>
           </div>
-          <span className="text-white whitespace-pre-line">{msg}</span>
+          <span ref={messageText}
+                className="text-white whitespace-pre-line markdown" 
+                dangerouslySetInnerHTML={{ __html: message }} />
         </div>
       </div>
       <span className="ml-auto" onClick={() => deleteMsg(id, stamp)}>🗑</span>
     </div>
   );
 };
-
-export default Message;

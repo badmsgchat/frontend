@@ -1,4 +1,6 @@
 import {config} from '../components/Utils';
+import {useState} from 'preact/hooks';
+
 
 const join = async (id, getRooms) => {
   const res = await fetch(`/api/rooms/${id}/meta`, {
@@ -31,8 +33,7 @@ const create = async (name, getRooms) => {
 }
 
 
-import {useState} from 'preact/hooks';
-function App({getRooms}) {
+export default function App({getRooms}) {
   const [id, setId] = useState('');
   const [name, setName] = useState('');
 
@@ -63,6 +64,4 @@ function App({getRooms}) {
       </div>
     </>
   )
-}
-
-export default App;
+};

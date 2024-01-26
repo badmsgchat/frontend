@@ -3,6 +3,22 @@
 @tailwind utilities;
 
 @layer components {
+  /* markdown support */
+  .markdown a {@apply text-blue-500 hover:underline};
+  .markdown em {@apply italic};
+  .markdown strong {@apply font-bold};
+  .markdown pre {@apply rounded};   /* todo */
+
+  .markdown h1 {@apply text-3xl font-bold mb-2};
+  .markdown h2 {@apply text-2xl font-bold mb-2};
+  .markdown h3 {@apply text-xl font-bold mb-2};
+
+  .markdown img {width: 35%; height: 35%}
+  .markdown .emoji {display: inline; width: 25px; height: 25px}   /* twemoji */
+
+
+
+  /* ui things */
   .form-input {
     @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg;
     @apply focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5;

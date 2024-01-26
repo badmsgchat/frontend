@@ -3,7 +3,7 @@ import Message from "../components/Message";
 import {config} from "../components/Utils";
 
 
-function App({ _messages, room, ws }) {
+export default function App({ _messages, room, ws }) {
   const messagesDiv = useRef(null);
   const [msg, setMsg] = useState('');
   const [messages, setMessages] = _messages;
@@ -54,20 +54,9 @@ function App({ _messages, room, ws }) {
         if (data.ev === `${room}:rm`) {
           setMessages((prev) => {
             const msgs = prev[room] || [];
-            const updated = msgs.map(msg => {
-              if (msg.key === data.id) {
-                return (
-                  <Message id=".deleted" user="" stamp="0"
-                   msg={<span className="text-neutral-500 italic">this message was deleted</span>} />
-                )
-              }
-              return msg;
-            });
+            const filtered = msgs.filter(msg => msg.key !== data.id);
 
-            return {
-              ...prev,
-              [room]: updated
-            };
+            return { ...prev, [room]: filtered };
           });
         }
       });
@@ -118,6 +107,4 @@ function App({ _messages, room, ws }) {
         </div>
     </>
   )
-}
-
-export default App;
+};

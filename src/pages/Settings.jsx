@@ -13,7 +13,7 @@ const clearRooms = () => {
 }
 
 
-function App() {
+export default function App() {
   document.title = `settings | badmsg`;
   return (
     <>
@@ -31,5 +31,3 @@ function App() {
     </>
   )
 }
-
-export default App;
