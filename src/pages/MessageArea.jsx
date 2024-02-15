@@ -12,10 +12,9 @@ export default function App({ _messages, room, ws }) {
     setMsg('');
     fetch("/api/messages", {
       method: "POST",
-      headers: {"Authorization": config().token, "Content-Type": "application/json"},
+      headers: {"Authorization": `Bearer ${config().token}`, "Content-Type": "application/json"},
       body: JSON.stringify({
          roomId: room,
-         pfpuri: config().pfp,
          msg, 
       })
     });
@@ -25,8 +24,8 @@ export default function App({ _messages, room, ws }) {
     }
   };
   const addMessage = (data) => {
-    const component = <Message key={data.id} id={`${room}:${data.id}`} user={data.name} msg={data.msg}
-                                stamp={data.stamp} pfpuri={data.pfpuri} />;
+    const component = <Message key={data.id} id={`${room}:${data.id}`} user={data.name} 
+                                msg={data.msg} stamp={data.stamp} />;
     setMessages((prev) => {
       const msgs = prev[room] || [];
       return {
@@ -64,7 +63,7 @@ export default function App({ _messages, room, ws }) {
 
       // fetch messages
       try {
-        const res = await fetch(`/api/messages/${room}`, {headers: {"Authorization": config().token}});
+        const res = await fetch(`/api/messages/${room}`, {headers: {"Authorization": `Bearer ${config().token}`}});
         const data = await res.json();
         data.forEach(msg => addMessage(msg));
       } catch (e) {

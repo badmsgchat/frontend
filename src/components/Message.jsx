@@ -9,7 +9,7 @@ import DOMPurify from "dompurify";
 const deleteMsg = async (id, stamp) => {
   fetch('/api/messages/delete', {
     method: 'POST', 
-    headers: {"Authorization": config().token, "Content-Type": "application/json"},
+    headers: {"Authorization": `Bearer ${config().token}`, "Content-Type": "application/json"},
     body: JSON.stringify({
       roomId: id.split(':')[0],
       msgId: id.split(':')[1],
@@ -18,7 +18,7 @@ const deleteMsg = async (id, stamp) => {
   });
 }
 
-export default function Message({ id, user, msg, stamp, pfpuri }) {
+export default function Message({ id, user, msg, stamp }) {
   let message = twemoji.parse( md(msg) );
   message = DOMPurify.sanitize(message);
 
@@ -34,7 +34,7 @@ export default function Message({ id, user, msg, stamp, pfpuri }) {
   return (
     <div className="flex items-start">
       <div className="p-1 flex">
-        <img className="w-12 h-12 rounded-full mr-2" src={"/mproxy?url=" + encodeURIComponent(pfpuri)} />
+        <img className="w-12 h-12 rounded-full mr-2" src={"/api/avatar/" + encodeURIComponent(user)} />
 
         <div className="flex flex-col">
           <div className="flex items-center">

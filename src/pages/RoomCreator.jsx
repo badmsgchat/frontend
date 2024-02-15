@@ -4,7 +4,7 @@ import {useState} from 'preact/hooks';
 
 const join = async (id, getRooms) => {
   const res = await fetch(`/api/rooms/${id}/meta`, {
-    headers: {"Authorization": config().token}
+    headers: {"Authorization": `Bearer ${config().token}`}
   });
   const data = await res.json();
 
@@ -16,9 +16,9 @@ const join = async (id, getRooms) => {
   }
 };
 const create = async (name, getRooms) => {
-  const res = await fetch(`/api/rooms/new`, {
+  const res = await fetch(`/api/rooms/`, {
     method: "POST",
-    headers: {"Authorization": config().token,
+    headers: {"Authorization": `Bearer ${config().token}`,
               "Content-Type": "application/json"},
     body: JSON.stringify({name}),
   });

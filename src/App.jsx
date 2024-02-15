@@ -51,7 +51,7 @@ export function App() {
           Object.entries(rooms).map(([id, name]) => (
             
             <button onClick={()=>setComponent(`msg:${id}`)}
-                    className="sideBtn" title={name}>{trunc(name)}</button>
+                    className="sideBtn" title={id}>{trunc(name)}</button>
           ))
           }
         </div>

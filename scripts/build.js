@@ -19,4 +19,4 @@ async function gzip(path) {
   }
 };
 
-gzip(`${import.meta.dirname}/../dist/assets`);
+gzip(`${import.meta.dirname}/../dist/`);
